@@ -180,13 +180,9 @@ nav a:hover {
     border-radius: 5px;               /* Slightly rounds logo corners */
     margin-bottom: 15px;              /* Space between logo and project title */
     display: block;                   /* Puts logo on its own line */
-    filter: grayscale(100%);          /* Makes logo black and white initially */
     transition: filter 0.3s;          /* Smoothly fades in the color on hover */
 }
 
-.card:hover img {
-    filter: grayscale(0%);            /* Restores color when card is hovered */
-}
 
 /* =========================================
    7. CONTACT & FORMS
