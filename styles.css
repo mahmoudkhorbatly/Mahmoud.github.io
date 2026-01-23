@@ -1,37 +1,243 @@
-body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; background: #e9ecef; color: #000000; line-height: 1.6; }
-header { position: sticky; top: 0; background: rgba(0, 0, 0, 0.9); z-index: 100; padding: 20px 0; }
-.nav-container { display: flex; justify-content: space-between; align-items: center; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-nav ul { list-style: none; display: flex; margin: 0; flex: 1; justify-content: flex-start; }
-nav a { color: #ffffff; text-decoration: none; padding: 10px 15px; transition: color 0.3s; white-space: nowrap; }
-nav a:hover { color: #007bff; }
-.nav-actions { display: flex; justify-content: flex-end; margin-left: auto; }
-.nav-actions button { background: #E0E0E0; color: #000000; border: none; padding: 10px 20px; margin: 0 5px; cursor: pointer; border-radius: 5px; transition: background 0.3s; }
-.nav-actions button:hover { background: #cccccc; }
-.hero { background: linear-gradient(135deg, #e9ecef 0%, #d6d8db 100%); padding: 100px 20px; text-align: center; color: #000000; }
-.hero-content h2 { font-size: 3em; margin-bottom: 20px; color: #000000; }
-.hero-content p { font-size: 1.2em; margin-bottom: 30px; }
-.hero button { background: #C7C7C7; color: #000000; border: none; padding: 15px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; transition: background 0.3s; }
-.hero button:hover { background: #cccccc; }
-.container { max-width: 1200px; margin: 0 auto; padding: 50px 20px; }
-h2 { color: #000000; text-align: center; margin-bottom: 30px; font-size: 2.5em; white-space: nowrap; }
-.about-photo { width: 300px; height: 300px; border-radius: 50%; display: block; margin: 20px auto; }
-
-.logo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; justify-items: center; }
-.logo-grid img { width: 150px; height: 150px; object-fit: contain; filter: grayscale(0%); transition: filter 0.3s, transform 0.3s, box-shadow 0.3s; }
-.logo-grid img:hover { transform: scale(1.1); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); z-index: 10; }.card { background: #F7FEFF; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 123, 255, 0.1); transition: transform 0.3s, box-shadow 0.3s; color: color: #000000; }
-.card:hover { transform: translateY(-10px); box-shadow: 0 0 30px rgba(0, 123, 255, 0.3); }
-.card img {
-    width: 60px;          /* Small, fixed width for the logo */
-    height: 60px;         /* Keep it square */
-    object-fit: contain;  /* Ensures the logo isn't cropped or stretched */
-    border-radius: 5px;   /* Optional: slightly rounded corners */
-    margin-bottom: 15px;  /* Space between the logo and the text below */
-    display: block;       /* Places it on its own line */
+/* =========================================
+   1. GLOBAL STYLES
+   ========================================= */
+body {
+    font-family: 'Inter', sans-serif; /* Sets the font for the whole page */
+    margin: 0;                        /* Removes default browser spacing around the edge */
+    padding: 0;                       /* Removes default internal spacing */
+    background: #e9ecef;              /* Sets the light grey background color of the site */
+    color: #000000;                   /* Sets the default text color to black */
+    line-height: 1.6;                 /* Increases vertical space between lines of text */
 }
-.contact-info { text-align: center; margin-bottom: 30px; }
-.social-link { display: inline-block; margin: 10px; padding: 10px 20px; background: #E0E0E0; color: #000000; text-decoration: none; border-radius: 5px; transition: background 0.3s; }
-.social-link:hover { background: #cccccc; }
-form { display: flex; flex-direction: column; max-width: 500px; margin: 0 auto; }
-input, textarea { margin: 10px 0; padding: 15px; border: 1px solid #007bff; border-radius: 5px; background: #e9ecef; color: #000000; }
-button { background: #F7FEFF; color: #000000; padding: 15px; border: none; border-radius: 5px; cursor: pointer; font-size: 1.1em; transition: background 0.3s; }
-button:hover { background: #cccccc;}
+
+.container {
+    max-width: 1200px;                /* Prevents content from stretching too wide on big screens */
+    margin: 0 auto;                   /* Centers the container horizontally */
+    padding: 50px 20px;               /* Adds vertical (50px) and horizontal (20px) internal spacing */
+}
+
+h2 {
+    color: #000000;                   /* Sets heading color to black */
+    text-align: center;               /* Centers the heading text */
+    margin-bottom: 30px;              /* Adds space below the heading */
+    font-size: 2.5em;                 /* Makes the heading text 2.5 times the base size */
+    white-space: nowrap;              /* Prevents the heading from wrapping to a new line */
+}
+
+/* =========================================
+   2. HEADER & NAVIGATION
+   ========================================= */
+header {
+    position: sticky;                 /* Keeps the header at the top when you scroll */
+    top: 0;                           /* Locks the header to the very top of the window */
+    background: rgba(0, 0, 0, 0.9);   /* Dark black background with 90% opacity */
+    z-index: 100;                     /* Ensures header stays on top of all other elements */
+    padding: 20px 0;                  /* Adds padding to the top and bottom of the header */
+}
+
+.nav-container {
+    display: flex;                    /* Uses flexbox to align logo and nav links */
+    justify-content: space-between;   /* Puts logo on the left and links on the right */
+    align-items: center;              /* Vertically centers everything in the header */
+    max-width: 1200px;                /* Matches the main site width */
+    margin: 0 auto;                   /* Centers the header content */
+    padding: 0 20px;                  /* Adds space on the left/right of the nav */
+}
+
+nav ul {
+    list-style: none;                 /* Removes the bullet points from the list */
+    display: flex;                    /* Lays the list items out horizontally */
+    margin: 0;                        /* Removes default list margins */
+    flex: 1;                          /* Allows the list to grow to fill space */
+    justify-content: flex-start;      /* Aligns the links to the start of the list */
+}
+
+nav a {
+    color: #ffffff;                   /* Makes the link text white */
+    text-decoration: none;            /* Removes the default underline */
+    padding: 10px 15px;               /* Adds clickable space around the text */
+    transition: color 0.3s;           /* Smoothly fades the color change on hover */
+    white-space: nowrap;              /* Prevents links from breaking into two lines */
+}
+
+nav a:hover {
+    color: #007bff;                   /* Changes link color to blue when hovered */
+}
+
+.nav-actions {
+    display: flex;                    /* Uses flexbox for the buttons */
+    justify-content: flex-end;        /* Pushes buttons to the right */
+    margin-left: auto;                /* Forces the actions to the end of the container */
+}
+
+.nav-actions button {
+    background: #E0E0E0;              /* Light grey button background */
+    color: #000000;                   /* Black button text */
+    border: none;                     /* Removes the default border */
+    padding: 10px 20px;               /* Adds space inside the button */
+    margin: 0 5px;                    /* Adds space between the two buttons */
+    cursor: pointer;                  /* Changes mouse cursor to a hand icon */
+    border-radius: 5px;               /* Rounds the button corners */
+    transition: background 0.3s;      /* Smoothly fades background color change */
+}
+
+.nav-actions button:hover {
+    background: #cccccc;              /* Darkens button grey when hovered */
+}
+
+/* =========================================
+   3. HERO SECTION
+   ========================================= */
+.hero {
+    background: linear-gradient(135deg, #e9ecef 0%, #d6d8db 100%); /* Diagonal grey gradient */
+    padding: 100px 20px;              /* Large vertical padding for impact */
+    text-align: center;               /* Centers all hero content */
+    color: #000000;                   /* Black text color */
+}
+
+.hero-content h2 {
+    font-size: 3em;                   /* Large font size for the main title */
+    margin-bottom: 20px;              /* Space below the title */
+    color: #000000;                   /* Black color */
+}
+
+.hero-content p {
+    font-size: 1.2em;                 /* Slightly larger text for the sub-header */
+    margin-bottom: 30px;              /* Space below the paragraph */
+}
+
+.hero button {
+    background: #C7C7C7;              /* Grey background for hero button */
+    color: #000000;                   /* Black text */
+    border: none;                     /* No border */
+    padding: 15px 30px;               /* Larger button size */
+    font-size: 1.2em;                 /* Larger button text */
+    cursor: pointer;                  /* Hand cursor */
+    border-radius: 5px;               /* Rounded corners */
+    transition: background 0.3s;      /* Fades background color change */
+}
+
+.hero button:hover {
+    background: #cccccc;              /* Darkens button on hover */
+}
+
+/* =========================================
+   4. ABOUT SECTION
+   ========================================= */
+.about-photo {
+    width: 300px;                     /* Sets specific width for the photo */
+    height: 300px;                    /* Sets specific height */
+    border-radius: 50%;               /* Makes the image a perfect circle */
+    display: block;                   /* Allows the use of auto margins */
+    margin: 20px auto;                /* Centers the photo with space top/bottom */
+}
+
+/* =========================================
+   5. LOGO GRID
+   ========================================= */
+.logo-grid {
+    display: grid;                    /* Enables CSS Grid layout */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Automatically creates columns */
+    gap: 20px;                        /* Space between logos */
+    justify-items: center;            /* Centers logos within their grid squares */
+}
+
+.logo-grid img {
+    width: 150px;                     /* Sets size of grid logos */
+    height: 150px;                    /* Sets size of grid logos */
+    object-fit: contain;              /* Keeps logo proportions without cropping */
+    filter: grayscale(0%);            /* Ensures images start in full color */
+    transition: filter 0.3s, transform 0.3s, box-shadow 0.3s; /* Animates hover effects */
+}
+
+.logo-grid img:hover {
+    transform: scale(1.1);            /* Makes logo 10% bigger on hover */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Adds a shadow for a "lifted" look */
+    z-index: 10;                      /* Ensures the logo stays on top of others when scaling */
+}
+
+/* =========================================
+   6. PROJECT CARDS
+   ========================================= */
+.card {
+    background: #F7FEFF;              /* Very light blue-white card background */
+    padding: 20px;                    /* Internal spacing for card content */
+    border-radius: 10px;              /* Rounded corners for the card */
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.1); /* Subtle blue glow shadow */
+    transition: transform 0.3s, box-shadow 0.3s; /* Animates the hover movement */
+    color: #000000;                   /* Black text */
+}
+
+.card:hover {
+    transform: translateY(-10px);     /* Moves card up by 10px on hover */
+    box-shadow: 0 0 30px rgba(0, 123, 255, 0.3); /* Stronger blue glow on hover */
+}
+
+.card img {
+    width: 60px;                      /* Sets small width for project logo */
+    height: 60px;                     /* Sets small height for project logo */
+    object-fit: contain;              /* Ensures the logo isn't squished */
+    border-radius: 5px;               /* Slightly rounds logo corners */
+    margin-bottom: 15px;              /* Space between logo and project title */
+    display: block;                   /* Puts logo on its own line */
+    filter: grayscale(100%);          /* Makes logo black and white initially */
+    transition: filter 0.3s;          /* Smoothly fades in the color on hover */
+}
+
+.card:hover img {
+    filter: grayscale(0%);            /* Restores color when card is hovered */
+}
+
+/* =========================================
+   7. CONTACT & FORMS
+   ========================================= */
+.contact-info {
+    text-align: center;               /* Centers the contact section text */
+    margin-bottom: 30px;              /* Space below contact info */
+}
+
+.social-link {
+    display: inline-block;            /* Allows padding and side-by-side layout */
+    margin: 10px;                     /* Space between links */
+    padding: 10px 20px;               /* Internal link spacing */
+    background: #E0E0E0;              /* Light grey background */
+    color: #000000;                   /* Black text */
+    text-decoration: none;            /* No underline */
+    border-radius: 5px;               /* Rounded corners */
+    transition: background 0.3s;      /* Fade background color */
+}
+
+.social-link:hover {
+    background: #cccccc;              /* Darkens grey on hover */
+}
+
+form {
+    display: flex;                    /* Flexbox for vertical stack */
+    flex-direction: column;           /* Stacks inputs on top of each other */
+    max-width: 500px;                 /* Prevents form from being too wide */
+    margin: 0 auto;                   /* Centers the form */
+}
+
+input, textarea {
+    margin: 10px 0;                   /* Space between input fields */
+    padding: 15px;                    /* Large typing area inside boxes */
+    border: 1px solid #007bff;        /* Blue border for inputs */
+    border-radius: 5px;               /* Rounded corners for inputs */
+    background: #e9ecef;              /* Light grey background inside boxes */
+    color: #000000;                   /* Black text inside boxes */
+}
+
+button {
+    background: #F7FEFF;              /* Card-matching background for buttons */
+    color: #000000;                   /* Black text */
+    padding: 15px;                    /* Button height/width spacing */
+    border: none;                     /* No border */
+    border-radius: 5px;               /* Rounded corners */
+    cursor: pointer;                  /* Hand cursor */
+    font-size: 1.1em;                 /* Slightly larger font */
+    transition: background 0.3s;      /* Smooth fade */
+}
+
+button:hover {
+    background: #cccccc;              /* Darkens button on hover */
+}
