@@ -50,6 +50,7 @@ nav ul {
     margin: 0;                        /* Removes default list margins */
     flex: 1;                          /* Allows the list to grow to fill space */
     justify-content: flex-start;      /* Aligns the links to the start of the list */
+    gap: 30px;                        /* This creates equal space between every link, dicrease or increase to adjust space
 }
 
 nav a {
@@ -157,8 +158,15 @@ nav a:hover {
 }
 
 /* =========================================
-   6. PROJECT CARDS
+   6. PROJECT & EDUCATION CARDS
    ========================================= */
+
+/* This section controls the layout and the SPACE between your cards */
+.card-grid {
+    display: grid;                /* Enables the layout system */
+    grid-template-columns: 1fr;   /* FORCES one card per line (Full width) */
+    gap: 30px;                    /* This ADDS the space between your cards */
+}
 .card {
     background: #F7FEFF;              /* Very light blue-white card background */
     padding: 20px;                    /* Internal spacing for card content */
