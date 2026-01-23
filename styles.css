@@ -180,8 +180,7 @@ nav a:hover {
     border-radius: 5px;               /* Slightly rounds logo corners */
     margin-bottom: 15px;              /* Space between logo and project title */
     display: block;                   /* Puts logo on its own line */
-    transition: filter 0.3s;          /* Smoothly fades in the color on hover */
-}
+}    
 
 
 /* =========================================
