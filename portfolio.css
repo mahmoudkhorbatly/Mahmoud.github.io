@@ -1,0 +1,673 @@
+/* =====================================================================
+   Mahmoud Khorbatly – Executive Portfolio (Updated layout)
+   FILE: portfolio.css
+   ---------------------------------------------------------------------
+   WHAT THIS FILE DOES
+   Adds the site's own look ON TOP OF Bootstrap 5.3. Bootstrap (loaded
+   from a CDN in portfolio.html) supplies the grid, buttons, navbar,
+   accordion, modal, form styles, etc. This file only customizes them.
+
+   HOW LIGHT / DARK MODE WORKS (read this first!)
+   - The <html> tag has an attribute: data-bs-theme="light" or "dark".
+   - portfolio.js flips that attribute when the moon/sun button is clicked.
+   - Section 1 below defines COLOR VARIABLES ("design tokens") twice:
+     once for light, once for dark. Every other rule uses those variables
+     (e.g. color: var(--mk-accent)), so the whole site re-colors itself
+     automatically when the attribute changes.
+   - RULE OF THUMB: never hard-code a color in a rule below. Add or edit
+     a variable in Section 1 instead, so both themes stay in sync.
+
+   NAMING CONVENTION
+   - Custom variables start with  --mk-   ("mk" = Mahmoud Khorbatly)
+   - Bootstrap's own variables start with --bs-  (we override some)
+
+   TABLE OF CONTENTS  (search for the number, e.g. "8." to jump there)
+     1.  Design tokens (colors for light & dark)
+     2.  Base (page-wide defaults)
+     3.  Buttons
+     4.  Navigation bar + scroll progress bar
+     5.  Hero (top banner, photo, stats)
+     6.  Sections (shared layout, headings, cards, skill chips)
+     7.  Affiliations (logo grid)
+     8.  Education & certificates
+     9.  Experience timeline
+     10. Projects, awards, modal
+     11. Contact info & form
+     12. Footer, back-to-top button, toast
+     13. Scroll-reveal animation
+     14. Accessibility: reduced motion
+     15. Small screens (phones)
+     16. Print
+   ===================================================================== */
+
+
+/* =====================================================================
+   1. DESIGN TOKENS
+   ---------------------------------------------------------------------
+   Change the site's colors HERE. Each variable is used in many places.
+   ===================================================================== */
+
+/* ---- Light theme (default) ----
+   ":root" = the <html> element. "[data-bs-theme="light"]" applies when
+   the light theme is active. Both are listed so light is the fallback. */
+:root,
+[data-bs-theme="light"] {
+    --mk-accent: #0b63ce;                     /* Main brand blue: buttons, links, highlights */
+    --mk-accent-hover: #084fa5;               /* Darker blue used when hovering accent items */
+    --mk-accent-rgb: 11, 99, 206;             /* Same blue as R,G,B numbers so we can do rgba(var(--mk-accent-rgb), .25) for transparency */
+    --mk-accent-soft: rgba(11, 99, 206, 0.10);/* Very faint blue: chip/badge/icon backgrounds */
+    --mk-bg: #f4f6f9;                         /* Page background */
+    --mk-bg-alt: #e9edf3;                     /* Background for every other section (.section-alt) to create stripes */
+    --mk-surface: #ffffff;                    /* Card / panel background */
+    --mk-border: rgba(15, 23, 42, 0.08);      /* Subtle border color for cards & inputs */
+    --mk-text: #0f172a;                       /* Main text color */
+    --mk-muted: #5b6475;                      /* Secondary / less important text */
+    --mk-nav-bg: rgba(255, 255, 255, 0.85);   /* Semi-transparent navbar background (blurred, see section 4) */
+    --mk-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);       /* Default card shadow */
+    --mk-shadow-hover: 0 18px 40px rgba(11, 99, 206, 0.18);/* Bigger, bluish shadow on hover */
+    /* Two soft colored "glows" behind the hero section */
+    --mk-hero-grad: radial-gradient(1200px 600px at 85% -10%, rgba(11, 99, 206, 0.18), transparent 60%),
+                    radial-gradient(900px 500px at -10% 110%, rgba(0, 168, 150, 0.14), transparent 60%);
+
+    /* Tell Bootstrap to use our colors/font for its own components */
+    --bs-body-bg: var(--mk-bg);
+    --bs-body-color: var(--mk-text);
+    --bs-body-font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* ---- Dark theme ----
+   Same variable NAMES as above, different VALUES. If you add a new
+   variable to the light theme, add its dark version here too. */
+[data-bs-theme="dark"] {
+    --mk-accent: #4c9dff;                     /* Lighter blue reads better on dark backgrounds */
+    --mk-accent-hover: #74b3ff;
+    --mk-accent-rgb: 76, 157, 255;
+    --mk-accent-soft: rgba(76, 157, 255, 0.14);
+    --mk-bg: #0b1220;                         /* Near-black navy page background */
+    --mk-bg-alt: #0f182a;
+    --mk-surface: #131d31;                    /* Cards are slightly lighter than the page */
+    --mk-border: rgba(255, 255, 255, 0.08);
+    --mk-text: #e6ebf4;                       /* Off-white text (pure white is harsh) */
+    --mk-muted: #9aa6bb;
+    --mk-nav-bg: rgba(11, 18, 32, 0.85);
+    --mk-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+    --mk-shadow-hover: 0 18px 40px rgba(76, 157, 255, 0.18);
+    --mk-hero-grad: radial-gradient(1200px 600px at 85% -10%, rgba(76, 157, 255, 0.22), transparent 60%),
+                    radial-gradient(900px 500px at -10% 110%, rgba(0, 200, 170, 0.12), transparent 60%);
+
+    --bs-body-bg: var(--mk-bg);
+    --bs-body-color: var(--mk-text);
+    --bs-secondary-color: var(--mk-muted);    /* Used by Bootstrap's .text-body-secondary class */
+}
+
+
+/* =====================================================================
+   2. BASE – page-wide defaults
+   ===================================================================== */
+
+/* smooth scrolling when clicking menu links;
+   scroll-padding-top stops section titles from hiding under the fixed navbar (≈80px tall) */
+html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+
+body {
+    background: var(--mk-bg);
+    color: var(--mk-text);
+    font-family: var(--bs-body-font-family);
+    line-height: 1.65;
+    /* Makes the light <-> dark switch fade instead of snapping */
+    transition: background-color .35s ease, color .35s ease;
+}
+a { color: var(--mk-accent); }
+a:hover { color: var(--mk-accent-hover); }
+
+/* Color of text when the visitor highlights it with the mouse */
+::selection { background: var(--mk-accent); color: #fff; }
+
+/* "Skip to main content" link (first element in <body>).
+   Hidden until a keyboard user presses Tab – helps accessibility. */
+.skip-link {
+    position: absolute; top: 8px; left: 8px; z-index: 2000;
+    background: var(--mk-accent); color: #fff; padding: 8px 14px; border-radius: 6px;
+}
+
+
+/* =====================================================================
+   3. BUTTONS
+   ---------------------------------------------------------------------
+   Bootstrap buttons read their colors from --bs-btn-* variables, so we
+   create our own button styles just by setting those variables.
+   Usage in HTML:  class="btn btn-accent"  or  class="btn btn-outline-accent"
+   ===================================================================== */
+
+/* Solid blue button (e.g. "Get Started", "Send Message", "Resume") */
+.btn-accent {
+    --bs-btn-color: #fff;                              /* text color */
+    --bs-btn-bg: var(--mk-accent);                     /* background */
+    --bs-btn-border-color: var(--mk-accent);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--mk-accent-hover);
+    --bs-btn-hover-border-color: var(--mk-accent-hover);
+    --bs-btn-active-bg: var(--mk-accent-hover);        /* while being clicked */
+    --bs-btn-active-color: #fff;
+    --bs-btn-disabled-bg: var(--mk-accent);            /* while the form is sending */
+    --bs-btn-disabled-border-color: var(--mk-accent);
+    --bs-btn-disabled-color: #fff;
+    font-weight: 600;
+    box-shadow: 0 6px 18px rgba(var(--mk-accent-rgb), .25);  /* soft blue glow under the button */
+}
+
+/* Outlined blue button that fills in on hover (e.g. "Let's Talk", "Expand all") */
+.btn-outline-accent {
+    --bs-btn-color: var(--mk-accent);
+    --bs-btn-border-color: var(--mk-accent);
+    --bs-btn-hover-color: #fff;
+    --bs-btn-hover-bg: var(--mk-accent);
+    --bs-btn-hover-border-color: var(--mk-accent);
+    --bs-btn-active-bg: var(--mk-accent);
+    --bs-btn-active-color: #fff;
+    font-weight: 600;
+}
+
+/* Small round icon-only button (dark-mode toggle, copy-email button) */
+.btn-icon {
+    width: 38px; height: 38px; padding: 0;
+    display: inline-flex; align-items: center; justify-content: center;  /* centers the icon */
+    border-radius: 50%;                                                  /* makes it a circle */
+    color: var(--mk-text);
+    background: var(--mk-accent-soft);
+    border: 1px solid var(--mk-border);
+}
+.btn-icon.btn-sm { width: 30px; height: 30px; font-size: .85rem; }      /* smaller variant */
+.btn-icon:hover { color: var(--mk-accent); background: var(--mk-surface); }
+
+/* LinkedIn button – uses LinkedIn's official blue on purpose (same in both themes) */
+.btn-linkedin { background: #0a66c2; color: #fff; font-weight: 600; }
+.btn-linkedin:hover { background: #004182; color: #fff; }
+
+
+/* =====================================================================
+   4. NAVIGATION BAR
+   ===================================================================== */
+
+/* Thin colored bar at the very top that grows as you scroll.
+   Its width (0% → 100%) is set by portfolio.js (section 2 of the JS). */
+.scroll-progress {
+    position: fixed; top: 0; left: 0; height: 3px; width: 0;
+    background: linear-gradient(90deg, var(--mk-accent), #00b39f);
+    z-index: 1100;                       /* above the navbar (Bootstrap's fixed navbar is 1030) */
+    transition: width .1s linear;
+}
+
+/* The navbar itself (<nav class="navbar ... site-nav">) */
+.site-nav {
+    background: var(--mk-nav-bg);
+    /* "Frosted glass" effect: blurs the page content behind the navbar */
+    backdrop-filter: saturate(180%) blur(12px);
+    -webkit-backdrop-filter: saturate(180%) blur(12px);   /* Safari needs the -webkit- prefix */
+    border-bottom: 1px solid transparent;
+    transition: box-shadow .3s, border-color .3s, padding .3s;
+    padding: 14px 0;
+}
+/* portfolio.js adds the "scrolled" class once the page is scrolled 40px+.
+   The navbar becomes slimmer and gets a border + shadow. */
+.site-nav.scrolled {
+    padding: 8px 0;
+    border-bottom-color: var(--mk-border);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, .06);
+}
+.site-nav .navbar-brand { color: var(--mk-text); }
+
+/* The "MK" logo square on the left of the navbar */
+.brand-mark {
+    display: inline-grid; place-items: center;   /* centers the letters */
+    width: 38px; height: 38px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--mk-accent), #00b39f);
+    color: #fff; font-weight: 800; letter-spacing: .5px; font-size: .95rem;
+}
+
+/* Menu links */
+.site-nav .nav-link {
+    color: var(--mk-muted);
+    font-weight: 500;
+    position: relative;                  /* needed for the underline (::after) below */
+    padding-inline: .8rem !important;    /* !important overrides Bootstrap's own padding */
+}
+/* ".active" is added automatically by Bootstrap ScrollSpy
+   (see data-bs-spy on <body>) to the link of the section currently on screen */
+.site-nav .nav-link:hover,
+.site-nav .nav-link.active { color: var(--mk-accent); }
+
+/* Animated underline under menu links – desktop only (≥ 992px wide).
+   It's a 2px line that starts at width 0 (scaleX(0)) and grows to full width. */
+@media (min-width: 992px) {
+    .site-nav .nav-link::after {
+        content: ""; position: absolute; left: .8rem; right: .8rem; bottom: 2px;
+        height: 2px; border-radius: 2px; background: var(--mk-accent);
+        transform: scaleX(0); transform-origin: left; transition: transform .25s ease;
+    }
+    .site-nav .nav-link:hover::after,
+    .site-nav .nav-link.active::after { transform: scaleX(1); }
+}
+
+/* Little rotate/zoom of the moon/sun icon when hovering the theme button */
+.theme-toggle i { transition: transform .4s ease; }
+.theme-toggle:hover i { transform: rotate(-20deg) scale(1.1); }
+
+
+/* =====================================================================
+   5. HERO – the big first screen (name, photo, headline, stats)
+   ===================================================================== */
+.hero {
+    position: relative;      /* lets .hero-bg be positioned inside it */
+    min-height: 100vh;       /* at least the full height of the browser window */
+    padding: 120px 0 60px;   /* top padding leaves room for the fixed navbar */
+    overflow: hidden;        /* hides the edges of the background glows */
+}
+/* Decorative colored glows (defined as --mk-hero-grad in section 1) */
+.hero-bg {
+    position: absolute; inset: 0;        /* inset: 0 = stretch to all four edges */
+    background: var(--mk-hero-grad);
+    pointer-events: none;                /* clicks pass through to content */
+}
+/* Pill above the name: "Regina, SK, Canada · Open to advisory roles" */
+.hero-badge {
+    background: var(--mk-accent-soft);
+    color: var(--mk-accent);
+    font-weight: 600; font-size: .85rem;
+    padding: .5rem .9rem;
+}
+.hero h1 { letter-spacing: -0.02em; }   /* slightly tighter letters for big headings */
+
+/* "MBA · MEng · PMP · CISM · CAIO" line */
+.credentials {
+    font-weight: 600; letter-spacing: .08em;
+    color: var(--mk-muted); text-transform: uppercase; font-size: .95rem;
+}
+
+/* Typed headline: "Servant Leader & <rotating role>|"
+   min-height stops the page from jumping while the text is typed/deleted */
+.hero .lead { font-size: 1.45rem; font-weight: 600; min-height: 2.2em; }
+
+/* The rotating role text gets a blue→teal gradient fill.
+   Trick: paint a gradient background, clip it to the text shape, make the text transparent. */
+.typed-text {
+    background: linear-gradient(90deg, var(--mk-accent), #00b39f);
+    -webkit-background-clip: text; background-clip: text;
+    color: transparent;
+}
+/* Blinking "|" cursor after the typed text */
+.typed-cursor { color: var(--mk-accent); animation: blink 1s step-end infinite; margin-left: 2px; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* Paragraph under the headline */
+.hero-sub { color: var(--mk-muted); font-size: 1.1rem; max-width: 620px; }
+/* On tablets/phones the hero is centered, so center this paragraph too */
+@media (max-width: 991.98px) { .hero-sub { margin-inline: auto; } }
+
+/* Round photo with a gradient ring. The ring is the wrapper's background
+   showing through its 6px padding around the image. */
+.hero-photo-wrap {
+    position: relative;
+    width: min(320px, 75vw); aspect-ratio: 1;   /* 320px max, never wider than 75% of the screen; always square */
+    border-radius: 50%;
+    padding: 6px;                               /* thickness of the gradient ring */
+    background: conic-gradient(from 180deg, var(--mk-accent), #00b39f, var(--mk-accent));
+    box-shadow: var(--mk-shadow-hover);
+    animation: float 6s ease-in-out infinite;   /* gentle up/down bobbing (keyframes below) */
+}
+.hero-photo {
+    width: 100%; height: 100%; object-fit: cover;   /* fill the circle without stretching */
+    border-radius: 50%;
+    border: 6px solid var(--mk-bg);                 /* gap between ring and photo, matches page background */
+    background: var(--mk-surface);
+}
+@keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+/* The four number boxes under the hero (26+ years, 80%, 25, 10%) */
+.stat-card {
+    background: var(--mk-surface);
+    border: 1px solid var(--mk-border);
+    border-radius: 16px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: var(--mk-shadow);
+    height: 100%;                       /* all four boxes same height */
+}
+.stat-number {
+    /* clamp(min, preferred, max): font grows with screen width but stays between 1.8rem and 2.5rem */
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    font-weight: 800; color: var(--mk-accent); line-height: 1.1;
+}
+.stat-label { color: var(--mk-muted); font-size: .9rem; margin-top: .25rem; }
+
+
+/* =====================================================================
+   6. SECTIONS – shared styles used by About, Education, Projects, etc.
+   ===================================================================== */
+.section { padding: 90px 0; }                 /* vertical spacing for every <section class="section"> */
+.section-alt { background: var(--mk-bg-alt); } /* add "section-alt" to alternate the background color */
+
+/* Section title block: small "eyebrow" text + big <h2> + gradient underline */
+.section-head { text-align: center; margin-bottom: 3rem; }
+.section-head h2 {
+    font-weight: 800; font-size: clamp(1.9rem, 4vw, 2.6rem);
+    letter-spacing: -0.02em; margin: 0;
+}
+/* Short gradient line under every section title */
+.section-head h2::after {
+    content: ""; display: block; width: 56px; height: 4px; border-radius: 4px;
+    margin: 14px auto 0;
+    background: linear-gradient(90deg, var(--mk-accent), #00b39f);
+}
+/* Small uppercase blue text above section titles, e.g. "WHO I AM" */
+.eyebrow {
+    display: inline-block; margin-bottom: .4rem;
+    text-transform: uppercase; letter-spacing: .14em;
+    font-size: .78rem; font-weight: 700; color: var(--mk-accent);
+}
+
+/* Generic white (or dark) rounded panel. Reuse it anywhere: class="glass-card" */
+.glass-card {
+    background: var(--mk-surface);
+    border: 1px solid var(--mk-border);
+    border-radius: 18px;
+    padding: 1.75rem;
+    box-shadow: var(--mk-shadow);
+}
+
+/* Pill-shaped tags in "Core strengths" (About section) */
+.skill-chip {
+    display: inline-flex; align-items: center; gap: .4rem;   /* icon + text side by side */
+    padding: .45rem .8rem; border-radius: 999px;             /* 999px = fully rounded ends */
+    background: var(--mk-accent-soft); color: var(--mk-text);
+    font-size: .88rem; font-weight: 500;
+    transition: transform .2s, background .2s;
+}
+.skill-chip i { color: var(--mk-accent); }            /* the icon inside the chip */
+.skill-chip:hover { transform: translateY(-2px); }    /* lift slightly on hover */
+
+
+/* =====================================================================
+   7. AFFILIATIONS – grid of company logos
+   The number of logos per row is controlled in the HTML with Bootstrap
+   classes (row-cols-3 row-cols-sm-4 ... row-cols-lg-7), not here.
+   ===================================================================== */
+.logo-tile {
+    /* Always white (even in dark mode) so logos with dark artwork stay readable */
+    background: #fff;
+    border: 1px solid var(--mk-border);
+    border-radius: 14px;
+    aspect-ratio: 1;                       /* square tiles */
+    display: grid; place-items: center;    /* center the logo in the tile */
+    padding: 14px;
+    transition: transform .25s, box-shadow .25s;
+}
+/* Logos start grey & slightly faded, then show full color on hover */
+.logo-tile img {
+    max-width: 100%; max-height: 100%; object-fit: contain;   /* fit inside without cropping */
+    filter: grayscale(100%); opacity: .75;
+    transition: filter .3s, opacity .3s;
+}
+.logo-tile:hover { transform: translateY(-4px) scale(1.04); box-shadow: var(--mk-shadow-hover); }
+.logo-tile:hover img { filter: none; opacity: 1; }
+/* Touch screens have no "hover", so show logos in full color there */
+@media (hover: none) { .logo-tile img { filter: none; opacity: 1; } }
+
+
+/* =====================================================================
+   8. EDUCATION & CERTIFICATES
+   ===================================================================== */
+
+/* Rounded square with an icon (graduation cap, lightning, trophy) */
+.edu-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: grid; place-items: center; margin-bottom: 1rem;
+    background: var(--mk-accent-soft); color: var(--mk-accent); font-size: 1.4rem;
+}
+
+/* Certificate search box width */
+.cert-search { max-width: 360px; }
+
+/* Filter buttons: All / Security / Management / Technology & AI.
+   portfolio.js moves the "active" class to the clicked button. */
+.btn-filter {
+    border: 1px solid var(--mk-border);
+    color: var(--mk-muted); background: transparent; border-radius: 999px;
+}
+.btn-filter:hover { color: var(--mk-accent); border-color: var(--mk-accent); }
+.btn-filter.active { background: var(--mk-accent); color: #fff; border-color: var(--mk-accent); }
+
+/* One certificate row (icon + text) */
+.cert {
+    display: flex; gap: .6rem; align-items: flex-start;
+    padding: .65rem .8rem; border-radius: 10px;
+    background: var(--mk-bg);
+    border: 1px solid var(--mk-border);
+    height: 100%;                         /* equal heights side by side */
+}
+.cert i { color: var(--mk-accent); margin-top: 2px; }
+.cert-item { transition: opacity .25s; }  /* wrapper column that JS shows/hides when filtering */
+
+
+/* =====================================================================
+   9. EXPERIENCE TIMELINE
+   Built from Bootstrap's accordion. We add:
+     - a vertical gradient line on the left  (.timeline::before)
+     - a circle "dot" for each job           (.timeline-item::before)
+   ===================================================================== */
+.timeline { position: relative; padding-left: 28px; }   /* left padding = room for the line & dots */
+
+/* Vertical line */
+.timeline::before {
+    content: ""; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px;
+    background: linear-gradient(var(--mk-accent), #00b39f);
+    border-radius: 2px;
+}
+
+/* Each job card. !important is needed to beat Bootstrap's accordion border rules. */
+.timeline-item {
+    position: relative;
+    margin-bottom: 1rem;
+    border: 1px solid var(--mk-border) !important;
+    border-radius: 14px !important;
+    overflow: visible;                 /* lets the dot sit outside the card */
+    background: var(--mk-surface);
+    box-shadow: var(--mk-shadow);
+}
+/* Dot on the line, pulled left into the padding area */
+.timeline-item::before {
+    content: ""; position: absolute; left: -27px; top: 22px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: var(--mk-surface); border: 3px solid var(--mk-accent);
+}
+
+/* The clickable job title row (Bootstrap .accordion-button) */
+.timeline .accordion-button {
+    background: transparent; color: var(--mk-text);
+    border-radius: 14px !important; box-shadow: none;
+}
+/* Opened job: light blue background */
+.timeline .accordion-button:not(.collapsed) { background: var(--mk-accent-soft); color: var(--mk-text); }
+/* Keyboard focus ring */
+.timeline .accordion-button:focus { box-shadow: 0 0 0 .2rem rgba(var(--mk-accent-rgb), .25); }
+.timeline .accordion-collapse { border-radius: 0 0 14px 14px; }
+
+.company { color: var(--mk-muted); font-weight: 500; }                                     /* " · MTN" next to the title */
+.date-badge { background: var(--mk-accent-soft); color: var(--mk-accent); font-weight: 600; } /* "Jan 2013 – Dec 2021" pill */
+.exp-list { margin: 0; padding-left: 1.1rem; }                                               /* bullet list of achievements */
+.exp-list li { margin-bottom: .5rem; }
+.exp-list li::marker { color: var(--mk-accent); }                                            /* blue bullets */
+
+
+/* =====================================================================
+   10. PROJECTS, AWARDS & PROJECT MODAL
+   ===================================================================== */
+.project-card {
+    background: var(--mk-surface);
+    border: 1px solid var(--mk-border);
+    border-radius: 18px;
+    box-shadow: var(--mk-shadow);
+    transition: transform .3s, box-shadow .3s;
+}
+.project-card:hover { transform: translateY(-8px); box-shadow: var(--mk-shadow-hover); }   /* lift on hover */
+.project-card .card-body { padding: 1.6rem; }
+
+/* Small project image at the top of each card (also used in the modal header) */
+.project-icon {
+    width: 56px; height: 56px; object-fit: contain;
+    border-radius: 12px; background: #fff; padding: 6px;
+    border: 1px solid var(--mk-border);
+}
+
+/* Small pills like "5G", "BSS", "+15% Revenue" */
+.tag {
+    display: inline-block; margin: 0 .35rem .35rem 0;
+    padding: .2rem .6rem; border-radius: 999px;
+    font-size: .75rem; font-weight: 600;
+    background: var(--mk-accent-soft); color: var(--mk-accent);
+}
+
+/* Cuts the description off after 4 lines with "…".
+   The full text is shown in the modal when "Read more" is clicked.
+   Change the "4" to show more/fewer lines. */
+.clamp {
+    display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical;
+    overflow: hidden; color: var(--mk-muted);
+}
+
+/* "Read more →" link-style button; the arrow slides right on hover */
+.read-more { color: var(--mk-accent); font-weight: 600; text-decoration: none; }
+.read-more i { transition: transform .2s; }
+.read-more:hover i { transform: translateX(4px); }
+
+/* Awards card: same card with a faint blue→teal tint layered over the surface color */
+.awards-card {
+    background: linear-gradient(135deg, rgba(var(--mk-accent-rgb), .12), rgba(0, 179, 159, .12)), var(--mk-surface);
+}
+.award-list li { display: flex; gap: .6rem; padding: .55rem 0; border-bottom: 1px dashed var(--mk-border); }
+.award-list li:last-child { border-bottom: 0; }   /* no line under the last award */
+.award-list i { color: #f5b301; }                 /* gold star icon */
+
+/* Project pop-up window (Bootstrap modal) */
+.modal-content { background: var(--mk-surface); border: 1px solid var(--mk-border); border-radius: 18px; }
+
+
+/* =====================================================================
+   11. CONTACT INFO & FORM
+   ===================================================================== */
+
+/* Left column: address / phone / email list */
+.contact-list li { display: flex; align-items: center; gap: .75rem; padding: .5rem 0; flex-wrap: wrap; }
+.contact-list i { color: var(--mk-accent); font-size: 1.15rem; }
+.contact-list .btn-icon i { color: inherit; font-size: inherit; }   /* keep the copy button's icon normal-size */
+.contact-list a { color: var(--mk-text); text-decoration: none; word-break: break-all; }  /* break long email on phones */
+.contact-list a:hover { color: var(--mk-accent); }
+
+/* Text boxes and dropdown */
+.form-control, .form-select {
+    background-color: var(--mk-bg);
+    border-color: var(--mk-border);
+    padding: .7rem .9rem;
+    border-radius: 10px;
+}
+/* Blue glow around the field being typed in */
+.form-control:focus, .form-select:focus {
+    background-color: var(--mk-bg);
+    border-color: var(--mk-accent);
+    box-shadow: 0 0 0 .2rem rgba(var(--mk-accent-rgb), .2);
+}
+.form-label { font-weight: 600; font-size: .92rem; }
+.form-check-input:checked { background-color: var(--mk-accent); border-color: var(--mk-accent); }  /* consent checkbox */
+
+/* NOTE ON ERROR MESSAGES:
+   Bootstrap shows ".invalid-feedback" text (red) only when the field has
+   the ".is-invalid" class – portfolio.js adds/removes that class.
+   The message box under the textarea is always "d-block" (so it can sit
+   next to the character counter), so we hide it here while it's empty. */
+#messageError:empty { display: none !important; }
+
+/* Form "shakes" left/right when Send is clicked with errors (class added by JS) */
+.shake { animation: shake .4s; }
+@keyframes shake {
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+
+/* =====================================================================
+   12. FOOTER, BACK-TO-TOP BUTTON, TOAST
+   ===================================================================== */
+.site-footer { background: var(--mk-surface); border-top: 1px solid var(--mk-border); color: var(--mk-muted); }
+.site-footer a { color: var(--mk-muted); }
+.site-footer a:hover { color: var(--mk-accent); }
+
+/* Round floating "↑" button, bottom-right.
+   Hidden by default; portfolio.js adds the "show" class after scrolling 600px. */
+.back-to-top {
+    position: fixed; right: 20px; bottom: 20px; z-index: 1030;
+    width: 46px; height: 46px; border-radius: 50%;
+    background: var(--mk-accent); color: #fff;
+    box-shadow: 0 8px 20px rgba(var(--mk-accent-rgb), .35);
+    opacity: 0; visibility: hidden; transform: translateY(12px);   /* hidden + slightly lowered */
+    transition: opacity .3s, transform .3s, visibility .3s;
+}
+.back-to-top.show { opacity: 1; visibility: visible; transform: translateY(0); }   /* fades/slides in */
+.back-to-top:hover { background: var(--mk-accent-hover); color: #fff; }
+
+/* Small pop-up notification at the bottom ("Email address copied…").
+   Colors are inverted (dark box in light mode, light box in dark mode). */
+#siteToast { background: var(--mk-text); color: var(--mk-bg); }
+#siteToast .btn-close { filter: invert(1); }                       /* white X on dark box */
+[data-bs-theme="dark"] #siteToast .btn-close { filter: none; }     /* dark X on light box */
+
+
+/* =====================================================================
+   13. SCROLL-REVEAL ANIMATION
+   ---------------------------------------------------------------------
+   Any element with class="reveal" starts invisible and 24px lower, then
+   fades/slides into place when it scrolls into view (portfolio.js adds
+   the "visible" class).
+   The ".js" prefix means: only hide things if JavaScript is running.
+   The "js" class is added to <html> by the small script in the <head>
+   of portfolio.html – so if JS is off, nothing stays invisible.
+   ===================================================================== */
+.js .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+.js .reveal.visible { opacity: 1; transform: none; }
+
+
+/* =====================================================================
+   14. ACCESSIBILITY: REDUCED MOTION
+   Some visitors set their computer to "reduce motion" (e.g. motion
+   sickness). For them we turn off all animations and transitions.
+   ===================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .js .reveal { opacity: 1; transform: none; }
+}
+
+
+/* =====================================================================
+   15. SMALL SCREENS (phones, under 576px wide)
+   Bootstrap's breakpoints: sm ≥576, md ≥768, lg ≥992, xl ≥1200, xxl ≥1400
+   ===================================================================== */
+@media (max-width: 575.98px) {
+    .section { padding: 64px 0; }                                  /* less vertical space */
+    .glass-card { padding: 1.25rem; }
+    .hero { padding-top: 100px; }
+    .timeline { padding-left: 22px; }                              /* narrower timeline gutter */
+    .timeline-item::before { left: -21px; width: 12px; height: 12px; }  /* smaller dots */
+    .timeline::before { left: 6px; }
+}
+
+
+/* =====================================================================
+   16. PRINT (when someone prints the page or saves it as PDF)
+   Hides interactive parts and opens all experience entries.
+   ===================================================================== */
+@media print {
+    .site-nav, .back-to-top, .scroll-progress, #contactForm, .theme-toggle, .hero-bg { display: none !important; }
+    .js .reveal { opacity: 1 !important; transform: none !important; }   /* make sure nothing is invisible */
+    .accordion-collapse { display: block !important; }                  /* show all job details */
+    .section { padding: 24px 0; }
+}

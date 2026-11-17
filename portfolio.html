@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<!--
+=====================================================================
+  Mahmoud Khorbatly – Executive Portfolio (Updated layout)
+  FILE: portfolio.html
+  ---------------------------------------------------------------------
+  THE 3 FILES OF THIS SITE
+    portfolio.html  → content & structure (this file)
+    portfolio.css   → colors, spacing, animations, light/dark themes
+    portfolio.js    → interactive behavior (dark mode, form checks, …)
+  Images are shared with the original site in the parent folder: ../images/
+  (If you move these files up one level, change "../images/" to "images/".)
+
+  BUILT WITH BOOTSTRAP 5.3 (loaded from a CDN – no install needed)
+  Most class names you see are Bootstrap "utility" classes. Quick decoder:
+    container        → centered, max-width wrapper
+    row / col-*      → 12-column grid. col-lg-7 = 7 of 12 columns on large screens
+    row-cols-md-2    → 2 equal columns per row on medium screens and up
+    g-4              → gap (gutter) between columns, scale 0–5
+    d-flex / d-none  → display:flex / display:none
+    d-md-inline      → only applies from "md" (≥768px) screens and up
+    mb-3, mt-5, px-4 → margin-bottom, margin-top, padding-left+right (scale 0–5)
+    text-center, fw-bold, fs-5, h5, small → text alignment / weight / size
+    gap-2            → space between flex children
+  Breakpoints: sm ≥576px, md ≥768px, lg ≥992px, xl ≥1200px
+  Docs: https://getbootstrap.com/docs/5.3/
+
+  ICONS: <i class="bi bi-NAME"></i> = Bootstrap Icons.
+  Browse names at https://icons.getbootstrap.com/
+
+  PAGE OUTLINE (search for these banners, e.g. "==== PROJECTS")
+    NAVIGATION → HERO → ABOUT → AFFILIATIONS → EDUCATION & SKILLS
+    → EXPERIENCE → PROJECTS (+ Awards) → CONTACT → FOOTER
+    → back-to-top button, project modal, toast (pop-ups used by JS)
+
+  IMPORTANT: many elements have an id="…" that portfolio.js uses to find
+  them. Ids marked "used by JS" below must not be renamed unless you
+  also update portfolio.js.
+
+  The menu links (href="#about") jump to the section with that id
+  (<section id="about">). Keep them matching if you rename a section.
+=====================================================================
+-->
+<!-- data-bs-theme="light|dark" controls the color theme. It's set by the
+     script in <head> below and toggled by portfolio.js. -->
+<html lang="en" data-bs-theme="light">
+<head>
+    <!-- ===== Basic page settings ===== -->
+    <meta charset="UTF-8">
+    <!-- Makes the page scale correctly on phones -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Text shown in the browser tab and in Google results -->
+    <title>Mahmoud Khorbatly | Technology Executive Portfolio</title>
+
+    <!-- ===== SEO & social sharing =====
+         description → summary shown in Google results
+         og:*        → title/description shown when the link is shared on LinkedIn, Teams, etc.
+         theme-color → color of the mobile browser's address bar (updated by JS in dark mode) -->
+    <meta name="description" content="Mahmoud Khorbatly – MBA, MEng, PMP, CISM, CAIO. Technology executive and strategic advisor in Telecom, IT, AI and Information Security.">
+    <meta name="author" content="Mahmoud Khorbatly">
+    <meta property="og:title" content="Mahmoud Khorbatly | Technology Executive Portfolio">
+    <meta property="og:description" content="Servant leader, technology executive and strategic advisor with 26+ years in Telecom, IT, AI and Information Security.">
+    <meta property="og:type" content="website">
+    <meta name="theme-color" content="#0d1b2a">
+
+    <!-- ===== Early theme script =====
+         Runs BEFORE the page is drawn so dark-mode visitors don't see a white flash.
+         1. Adds class "js" to <html> → tells portfolio.css that JavaScript works,
+            so it's safe to hide ".reveal" elements until they animate in.
+         2. Picks the theme: saved choice (localStorage "mk-theme") → else the OS setting.
+         Kept inline (not in portfolio.js) on purpose: it must run as early as possible. -->
+    <script>
+        (function () {
+            document.documentElement.classList.add('js');
+            var saved = null;
+            try { saved = localStorage.getItem('mk-theme'); } catch (e) {}
+            var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            document.documentElement.setAttribute('data-bs-theme', saved || (prefersDark ? 'dark' : 'light'));
+        })();
+    </script>
+
+    <!-- ===== Fonts =====
+         "Inter" from Google Fonts. To change the font, replace this link and
+         update the body font-family variable in portfolio.css (section 1). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- ===== Bootstrap 5 CSS + Bootstrap Icons (from the jsDelivr CDN) =====
+         The version number (5.3.3 / 1.11.3) is pinned on purpose so the site
+         doesn't change unexpectedly. Bootstrap's JS is loaded at the bottom of <body>. -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- ===== Our own styles =====
+         Must come AFTER Bootstrap so our rules win when both style the same thing. -->
+    <link rel="stylesheet" href="portfolio.css">
+</head>
+<!-- data-bs-spy="scroll" turns on Bootstrap ScrollSpy: it watches which section is
+     on screen and adds the "active" class to the matching link inside #mainNav.
+     data-bs-offset = how many px from the top a section counts as "current". -->
+<body data-bs-spy="scroll" data-bs-target="#mainNav" data-bs-offset="90" tabindex="0">
+
+    <!-- Accessibility: invisible link that appears when a keyboard user presses Tab,
+         letting them jump past the menu straight to the content. -->
+    <a class="visually-hidden-focusable skip-link" href="#main">Skip to main content</a>
+
+    <!-- Thin bar at the very top that fills up as you scroll.
+         Width set by portfolio.js (section 2). id used by JS. -->
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
+
+    <!-- =================================================================
+         NAVIGATION (top menu bar)
+         - fixed-top           → stays at the top while scrolling
+         - navbar-expand-lg    → full menu on large screens; "hamburger" button below 992px
+         - id="mainNav"        → used by ScrollSpy (on <body>) and by JS (shrink on scroll)
+         TO ADD A MENU ITEM: copy one <li class="nav-item"> below and point
+         its href="#…" at a section id.
+         ================================================================= -->
+    <nav class="navbar navbar-expand-lg fixed-top site-nav" id="mainNav" aria-label="Main navigation">
+        <div class="container">
+            <!-- Logo / name on the left. Clicking it scrolls back to the top.
+                 The full name is hidden on very small phones (d-none d-sm-inline). -->
+            <a class="navbar-brand fw-bold d-flex align-items-center gap-2" href="#hero">
+                <span class="brand-mark">MK</span>
+                <span class="d-none d-sm-inline">Mahmoud Khorbatly</span>
+            </a>
+
+            <!-- Right-hand buttons: theme toggle, Resume, and the mobile "hamburger".
+                 order-lg-last puts this group AFTER the menu links on large screens,
+                 but before them (next to the logo) on phones. -->
+            <div class="d-flex align-items-center gap-2 order-lg-last">
+                <!-- DARK MODE TOGGLE. ids "themeToggle" and "themeIcon" used by JS (section 1).
+                     The icon switches between moon and sun automatically.
+                     data-bs-toggle="tooltip" + title="…" = small hover hint (activated in JS). -->
+                <button class="btn btn-icon theme-toggle" id="themeToggle" type="button"
+                        aria-label="Toggle dark mode" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Toggle dark / light mode">
+                    <i class="bi bi-moon-stars-fill" id="themeIcon" aria-hidden="true"></i>
+                </button>
+                <!-- RESUME button – visible on tablets/desktops only (d-none d-md-inline-flex).
+                     On phones the same link appears inside the collapsed menu instead (see below).
+                     TO UPDATE THE RESUME LINK: change the href here AND in the mobile menu item. -->
+                <a class="btn btn-accent btn-sm d-none d-md-inline-flex align-items-center gap-1"
+                   href="https://docs.google.com/document/d/1StNvqeSnKcpcjNcTEg0EFyPghTjOQBUn/edit?usp=drive_link&ouid=101691097938717290044&rtpof=true&sd=true"
+                   target="_blank" rel="noopener">
+                    <i class="bi bi-file-earmark-arrow-down"></i> Resume
+                </a>
+                <!-- "Hamburger" button (☰) – only shown below 992px. Bootstrap opens/closes #navLinks. -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navLinks"
+                        aria-controls="navLinks" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <!-- The menu links. "collapse navbar-collapse" = hidden behind the hamburger on
+                 small screens. mx-auto centers them on large screens. id used by JS
+                 (closes the mobile menu after a link is tapped). -->
+            <div class="collapse navbar-collapse" id="navLinks">
+                <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#affiliations">Affiliations</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#education">Education &amp; Skills</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#experience">Experience</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#projects">Projects</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <!-- Phone-only Resume link (d-md-none = hidden from 768px up) -->
+                    <li class="nav-item d-md-none">
+                        <a class="nav-link" href="https://docs.google.com/document/d/1StNvqeSnKcpcjNcTEg0EFyPghTjOQBUn/edit?usp=drive_link&ouid=101691097938717290044&rtpof=true&sd=true" target="_blank" rel="noopener">
+                            <i class="bi bi-file-earmark-arrow-down"></i> Download Resume
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- <main> wraps all the page content (everything except menu & footer).
+         id="main" is the target of the "Skip to main content" link. -->
+    <main id="main">
+
+        <!-- =================================================================
+             HERO (first full screen: name, headline, photo, key numbers)
+             Layout: one row with two columns on large screens
+               - left  (col-lg-7): text
+               - right (col-lg-5): photo
+             On tablets/phones the columns stack and the text is centered.
+             The class "reveal" (used throughout the page) makes an element
+             fade in when it scrolls into view – see portfolio.js section 5.
+             ================================================================= -->
+        <section id="hero" class="hero d-flex align-items-center">
+            <!-- Decorative colored glow in the background (pure CSS, no content) -->
+            <div class="hero-bg" aria-hidden="true"></div>
+            <div class="container position-relative">
+                <div class="row align-items-center g-5">
+                    <!-- LEFT COLUMN: text. text-lg-start = left-aligned on large screens only -->
+                    <div class="col-lg-7 text-center text-lg-start reveal">
+                        <span class="badge rounded-pill hero-badge mb-3">
+                            <i class="bi bi-geo-alt-fill"></i> Regina, SK, Canada &middot; Open to advisory roles
+                        </span>
+                        <h1 class="display-4 fw-bold mb-2">Mahmoud Khorbatly</h1>
+                        <p class="credentials mb-3">MBA &middot; MEng &middot; PMP &middot; CISM &middot; CAIO</p>
+                        <!-- TYPED HEADLINE: the text in #typedText is replaced by portfolio.js
+                             (section 3), cycling through a list of roles.
+                             To change the roles, edit the "roles" list in portfolio.js.
+                             The text written here is what shows before the animation starts
+                             and for visitors with "reduce motion" turned on. -->
+                        <p class="lead mb-2">
+                            <span class="typed-prefix">Servant Leader &amp; </span>
+                            <span class="typed-text" id="typedText" aria-live="polite">Technology Executive</span><span class="typed-cursor" aria-hidden="true">|</span>
+                        </p>
+                        <p class="hero-sub mb-4">
+                            Helping people and organizations achieve success in Telecom, IT, AI, and Information Security.
+                            I provide the strategic vision and technical rigor required to transform technology into a competitive advantage.
+                        </p>
+                        <!-- Call-to-action buttons (styles: .btn-accent / .btn-outline-accent in portfolio.css) -->
+                        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+                            <a href="#about" class="btn btn-accent btn-lg px-4">
+                                Get Started <i class="bi bi-arrow-down-short"></i>
+                            </a>
+                            <a href="#contact" class="btn btn-outline-accent btn-lg px-4">
+                                <i class="bi bi-chat-dots"></i> Let's Talk
+                            </a>
+                        </div>
+                    </div>
+                    <!-- RIGHT COLUMN: round photo with gradient ring. To change the photo,
+                         replace ../images/mahmoud.png (a square image works best). -->
+                    <div class="col-lg-5 text-center reveal">
+                        <div class="hero-photo-wrap mx-auto">
+                            <img src="../images/mahmoud.png" alt="Portrait of Mahmoud Khorbatly" class="hero-photo" width="320" height="320">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KEY STATS (4 boxes). col-6 col-md-3 = 2 per row on phones, 4 per row from tablets up.
+                     Each number counts up from 0 to data-target="…" when scrolled into view
+                     (portfolio.js section 4). TO CHANGE A NUMBER: edit data-target only.
+                     The "+" or "%" after the <span> is static text. -->
+                <div class="row g-3 mt-5 stats-row">
+                    <div class="col-6 col-md-3 reveal">
+                        <div class="stat-card">
+                            <div class="stat-number"><span class="counter" data-target="26">0</span>+</div>
+                            <div class="stat-label">Years in ICT</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 reveal">
+                        <div class="stat-card">
+                            <div class="stat-number"><span class="counter" data-target="80">0</span>%</div>
+                            <div class="stat-label">Fewer security incidents</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 reveal">
+                        <div class="stat-card">
+                            <div class="stat-number"><span class="counter" data-target="25">0</span></div>
+                            <div class="stat-label">Mission-critical systems orchestrated</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 reveal">
+                        <div class="stat-card">
+                            <div class="stat-number"><span class="counter" data-target="10">0</span>%</div>
+                            <div class="stat-label">Revenue contributed by IT</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             ABOUT
+             Every section follows the same pattern:
+               <section id="…" class="section [section-alt]">   ← section-alt = alternate background color
+                 <div class="container">
+                   <div class="section-head">  eyebrow text + <h2> title  </div>
+                   …content…
+             Copy this pattern to create a new section, then add a menu link to it.
+             Layout here: bio (7/12 width) + "Core strengths" (5/12) side by side on
+             large screens, stacked on smaller ones. h-100 = equal heights.
+             ================================================================= -->
+        <section id="about" class="section">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Who I am</span>
+                    <h2>About</h2>
+                </div>
+                <div class="row g-4 align-items-stretch">
+                    <div class="col-lg-7 reveal">
+                        <div class="glass-card h-100">
+                            <p class="fs-5 mb-0">
+                                A highly accomplished ICT professional with over 26 years of experience in Telecom, Information Technology,
+                                and Information Security. My career is marked by a relentless pursuit of excellence and a commitment to
+                                continuous improvement. One of my core strengths is my ability to drive change and lead cross-functional
+                                teams to achieve exceptional results in the face of complex challenges. I leverage a servant-leadership
+                                approach to drive operational excellence and secure, scalable technology growth.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-5 reveal">
+                        <div class="glass-card h-100">
+                            <h3 class="h5 mb-3">Core strengths</h3>
+                            <!-- Skill "chips". TO ADD ONE: copy a <span class="skill-chip"> line
+                                 and pick an icon from https://icons.getbootstrap.com/ -->
+                            <div class="d-flex flex-wrap gap-2">
+                                <span class="skill-chip"><i class="bi bi-diagram-3"></i> Digital Transformation</span>
+                                <span class="skill-chip"><i class="bi bi-shield-lock"></i> Cybersecurity &amp; GRC</span>
+                                <span class="skill-chip"><i class="bi bi-cpu"></i> AI Strategy</span>
+                                <span class="skill-chip"><i class="bi bi-broadcast"></i> BSS / OSS</span>
+                                <span class="skill-chip"><i class="bi bi-kanban"></i> Program Management</span>
+                                <span class="skill-chip"><i class="bi bi-cloud"></i> Private Cloud</span>
+                                <span class="skill-chip"><i class="bi bi-bar-chart-line"></i> BI &amp; Analytics</span>
+                                <span class="skill-chip"><i class="bi bi-people"></i> Servant Leadership</span>
+                                <span class="skill-chip"><i class="bi bi-cash-coin"></i> CAPEX / OPEX</span>
+                                <span class="skill-chip"><i class="bi bi-briefcase"></i> Vendor Management</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             AFFILIATIONS (logo grid)
+             Logos per row grow with screen size:
+               row-cols-3 (phones) → sm-4 → md-5 → lg-7 (desktops)
+             Logos appear grey and turn full-color on hover (portfolio.css section 7).
+             loading="lazy" = image downloads only when scrolled near (faster page).
+             TO ADD A LOGO: put the image in ../images/ and copy one <div class="col"> line;
+             update the src, alt (for screen readers) and title (hover text).
+             ================================================================= -->
+        <section id="affiliations" class="section section-alt">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Organizations I've worked with</span>
+                    <h2>Affiliations</h2>
+                </div>
+                <div class="row row-cols-3 row-cols-sm-4 row-cols-md-5 row-cols-lg-7 g-3 reveal" id="logoGrid">
+                    <div class="col"><div class="logo-tile" title="Access Communications"><img src="../images/logo-access.png" alt="Access Communications" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="STC"><img src="../images/logo-stc.png" alt="STC" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Norconsult Telematics"><img src="../images/logo-norconsult.png" alt="Norconsult Telematics" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="MTN"><img src="../images/logo-mtn.png" alt="MTN" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Spacetel"><img src="../images/logo-spacetel.png" alt="Spacetel" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="ISACA"><img src="../images/logo-isaca.png" alt="ISACA" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="PMI"><img src="../images/logo-pmi.png" alt="PMI" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="ServiceNow"><img src="../images/logo-servicenow.png" alt="ServiceNow" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Oracle"><img src="../images/logo-oracle.png" alt="Oracle" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Microsoft"><img src="../images/logo-microsoft.png" alt="Microsoft" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Accenture"><img src="../images/logo-accenture.png" alt="Accenture" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="HP"><img src="../images/logo-hpe.png" alt="HP" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="IBM"><img src="../images/logo-ibm.png" alt="IBM" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Telus"><img src="../images/logo-telus.png" alt="Telus" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Ericsson"><img src="../images/logo-ericsson.png" alt="Ericsson" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Alcatel-Lucent"><img src="../images/logo-alcatel.png" alt="Alcatel-Lucent" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Huawei"><img src="../images/logo-huawei.png" alt="Huawei" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Whale Cloud"><img src="../images/logo-whalecloud.png" alt="Whale Cloud" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Tech Mahindra"><img src="../images/logo-techmahindra.png" alt="Tech Mahindra" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Tecnotree"><img src="../images/logo-tecnotree.png" alt="Tecnotree" loading="lazy"></div></div>
+                    <div class="col"><div class="logo-tile" title="Tellabs"><img src="../images/logo-tellabs.png" alt="Tellabs" loading="lazy"></div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             EDUCATION & SKILLS
+             Part 1: two degree cards side by side (col-md-6 = half width from tablets up)
+             Part 2: certificates list with filter buttons + search (portfolio.js section 6)
+             ================================================================= -->
+        <section id="education" class="section">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Lifelong learning</span>
+                    <h2>Education &amp; Skills</h2>
+                </div>
+
+                <!-- Part 1: Degrees -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-6 reveal">
+                        <div class="glass-card h-100 edu-card">
+                            <div class="edu-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                            <h3 class="h5 mb-1">Master of Business Administration</h3>
+                            <p class="text-body-secondary mb-1">Leadership and Sustainability</p>
+                            <p class="small mb-0"><i class="bi bi-building"></i> University of Cumbria, UK &middot; Jan 2015 – Oct 2016</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6 reveal">
+                        <div class="glass-card h-100 edu-card">
+                            <div class="edu-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                            <h3 class="h5 mb-1">Master of Engineering</h3>
+                            <p class="text-body-secondary mb-1">Electrical and Electronics</p>
+                            <p class="small mb-0"><i class="bi bi-building"></i> Lebanese University &middot; Sep 1994 – Jul 1999</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Part 2: Certificates
+                     - #certCount badge: number of certificates currently shown (updated by JS).
+                       If you add/remove certificates, also update the starting number "14".
+                     - Filter buttons: data-filter="…" must match the data-cat="…" of certificates.
+                     - #certSearch, #certList, #certEmpty: ids used by JS. -->
+                <div class="glass-card reveal">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-3">
+                        <h3 class="h5 mb-0">Certificates &amp; Competencies <span class="badge text-bg-secondary ms-1" id="certCount">14</span></h3>
+                        <div class="d-flex flex-wrap gap-2" role="group" aria-label="Filter certificates">
+                            <button type="button" class="btn btn-sm btn-filter active" data-filter="all">All</button>
+                            <button type="button" class="btn btn-sm btn-filter" data-filter="security">Security</button>
+                            <button type="button" class="btn btn-sm btn-filter" data-filter="management">Management</button>
+                            <button type="button" class="btn btn-sm btn-filter" data-filter="tech">Technology &amp; AI</button>
+                        </div>
+                    </div>
+                    <div class="input-group input-group-sm mb-3 cert-search">
+                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                        <input type="search" class="form-control" id="certSearch" placeholder="Search certificates…" aria-label="Search certificates">
+                    </div>
+                    <!-- Certificate list: 1 column on phones, 2 from tablets up.
+                         TO ADD A CERTIFICATE: copy one "cert-item" line and set data-cat to
+                         "security", "management" or "tech". Icon bi-patch-check-fill marks
+                         major certifications; bi-award marks courses. -->
+                    <div class="row row-cols-1 row-cols-md-2 g-2" id="certList">
+                        <div class="col cert-item" data-cat="security"><div class="cert"><i class="bi bi-patch-check-fill"></i> <span><strong>CISM</strong> – Certified Information Security Manager, ISACA</span></div></div>
+                        <div class="col cert-item" data-cat="management"><div class="cert"><i class="bi bi-patch-check-fill"></i> <span><strong>PMP</strong> – Project Management Professional, PMI (Inactive)</span></div></div>
+                        <div class="col cert-item" data-cat="tech"><div class="cert"><i class="bi bi-award"></i> <span><strong>CAIO</strong> – Chief AI Officer, School of AI</span></div></div>
+                        <div class="col cert-item" data-cat="management"><div class="cert"><i class="bi bi-award"></i> <span>Scrum Master, Alison</span></div></div>
+                        <div class="col cert-item" data-cat="tech"><div class="cert"><i class="bi bi-award"></i> <span>ITP – Information Technology Professional, ICTC</span></div></div>
+                        <div class="col cert-item" data-cat="management"><div class="cert"><i class="bi bi-award"></i> <span>Digital Transformation, Boston Consulting Group</span></div></div>
+                        <div class="col cert-item" data-cat="management"><div class="cert"><i class="bi bi-award"></i> <span>IS/IT Governance, University of Minnesota</span></div></div>
+                        <div class="col cert-item" data-cat="tech"><div class="cert"><i class="bi bi-award"></i> <span>Continuous Delivery &amp; DevOps, University of Virginia</span></div></div>
+                        <div class="col cert-item" data-cat="tech"><div class="cert"><i class="bi bi-award"></i> <span>ServiceNow Fundamentals (18 Badges)</span></div></div>
+                        <div class="col cert-item" data-cat="security"><div class="cert"><i class="bi bi-award"></i> <span>ICS Cyber Security Landscape for Managers, IACET</span></div></div>
+                        <div class="col cert-item" data-cat="security"><div class="cert"><i class="bi bi-award"></i> <span>Mapping IT Defense-in-Depth Security Solutions to ICS, IACET</span></div></div>
+                        <div class="col cert-item" data-cat="management"><div class="cert"><i class="bi bi-award"></i> <span>Managing an Agile Team, Virginia Darden School of Business</span></div></div>
+                        <div class="col cert-item" data-cat="tech"><div class="cert"><i class="bi bi-award"></i> <span>Big Data, Artificial Intelligence, and Ethics, UC Davis</span></div></div>
+                        <div class="col cert-item" data-cat="management"><div class="cert"><i class="bi bi-award"></i> <span>Digital Product Management, Virginia Darden School of Business</span></div></div>
+                    </div>
+                    <!-- Shown by JS only when the search/filter matches nothing -->
+                    <p class="text-body-secondary small mt-3 mb-0 d-none" id="certEmpty">No certificates match your search.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             EXPERIENCE (timeline)
+             A Bootstrap ACCORDION styled as a vertical timeline (portfolio.css section 9).
+             Clicking a job title opens/closes its details.
+
+             HOW EACH JOB IS WIRED (the 3 values must match!):
+               button  data-bs-target="#exp1"  aria-controls="exp1"
+               panel   id="exp1"
+             Every job needs a UNIQUE id (exp1, exp2, exp3, exp4…). Reusing an id
+             makes the wrong job open – this was a bug in the original index.html.
+
+             OPEN vs CLOSED BY DEFAULT:
+               open   → button has NO "collapsed" class, aria-expanded="true",  panel has "show"
+               closed → button has "collapsed",          aria-expanded="false", panel has NO "show"
+
+             TO ADD A JOB: copy a whole <div class="accordion-item timeline-item"> block,
+             give it the next id (exp5) in all 3 places, and edit the text.
+             ================================================================= -->
+        <section id="experience" class="section section-alt">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Career highlights</span>
+                    <h2>Selected Experience</h2>
+                </div>
+
+                <!-- "Expand all / Collapse all" button (id used by JS, section 7) -->
+                <div class="d-flex justify-content-end mb-3 reveal">
+                    <button type="button" class="btn btn-sm btn-outline-accent" id="toggleAllExp">
+                        <i class="bi bi-arrows-expand"></i> <span>Expand all</span>
+                    </button>
+                </div>
+
+                <!-- id="expAccordion" used by JS -->
+                <div class="timeline accordion reveal" id="expAccordion">
+
+                    <!-- ===== Job 1 (open by default) ===== -->
+                    <div class="accordion-item timeline-item">
+                        <!-- Clickable header: job title + company on the left, date pill on the right
+                             (stacked on phones: flex-column → flex-md-row) -->
+                        <h3 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#exp1" aria-expanded="true" aria-controls="exp1">
+                                <span class="d-flex flex-column flex-md-row w-100 justify-content-between gap-1 pe-3">
+                                    <span><strong>Manager, System Development and Delivery</strong><span class="company"> · Access Communications</span></span>
+                                    <span class="badge rounded-pill date-badge align-self-start">Oct 2023 – Present</span>
+                                </span>
+                            </button>
+                        </h3>
+                        <!-- Details panel. Use <strong> to highlight key results. -->
+                        <div id="exp1" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <ul class="exp-list">
+                                    <li>Conducted comprehensive analyses of existing systems to identify strengths, weaknesses, and opportunities for improvement.</li>
+                                    <li>Developed detailed technology roadmaps to guide the evolution of systems and applications in alignment with organizational goals.</li>
+                                    <li>Led end-to-end BSS transformation program, encompassing needs analysis, RFI/RFP development, supplier selection, and comprehensive project planning.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Job 2 ===== -->
+                    <div class="accordion-item timeline-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#exp2" aria-expanded="false" aria-controls="exp2">
+                                <span class="d-flex flex-column flex-md-row w-100 justify-content-between gap-1 pe-3">
+                                    <span><strong>Sr. Program and Project Manager</strong><span class="company"> · Norconsult Telematics</span></span>
+                                    <span class="badge rounded-pill date-badge align-self-start">Mar 2022 – Apr 2023</span>
+                                </span>
+                            </button>
+                        </h3>
+                        <div id="exp2" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul class="exp-list">
+                                    <li>Provided strategic leadership, direction, coaching, mentoring, delegation, and HR oversight to 25 cross-functional resources.</li>
+                                    <li>Owned end-to-end complex projects’ lifecycle from initiation to closure, consistently exceeding stakeholders’ expectations.</li>
+                                    <li>Defined project charters, timelines, and budget (CAPEX, OPEX), resource needs, resource utilization, regular status updates, vendor management, and performance evaluation.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Job 3 ===== -->
+                    <div class="accordion-item timeline-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#exp3" aria-expanded="false" aria-controls="exp3">
+                                <span class="d-flex flex-column flex-md-row w-100 justify-content-between gap-1 pe-3">
+                                    <span><strong>Chief Information Officer</strong><span class="company"> · MTN</span></span>
+                                    <span class="badge rounded-pill date-badge align-self-start">Jan 2013 – Dec 2021</span>
+                                </span>
+                            </button>
+                        </h3>
+                        <div id="exp3" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul class="exp-list">
+                                    <li>Revitalized the company's IT vision, developed the product roadmap, and led the company's technology transformation.</li>
+                                    <li>Established the Information Security division from scratch (strategy, governance, risk, and incident management) to protect organization assets and brand, which <strong>decreased security incidents by 80%</strong> and MTTR to 7 days.</li>
+                                    <li>Transformed IT from a cost center costing the company 7% of its revenue into a <strong>profit center contributing 10% of company revenue</strong>.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ===== Job 4 ===== -->
+                    <div class="accordion-item timeline-item">
+                        <h3 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#exp4" aria-expanded="false" aria-controls="exp4">
+                                <span class="d-flex flex-column flex-md-row w-100 justify-content-between gap-1 pe-3">
+                                    <span><strong>Senior Manager IT Projects and Service Delivery</strong><span class="company"> · MTN</span></span>
+                                    <span class="badge rounded-pill date-badge align-self-start">Jan 2007 – Dec 2011</span>
+                                </span>
+                            </button>
+                        </h3>
+                        <div id="exp4" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul class="exp-list">
+                                    <li>Ensured the IT portfolio strategy was effectively delivered to achieve business objectives in terms of return on investment, data integrity, customer satisfaction, and operational excellence.</li>
+                                    <li><strong>Reduced project cycle time by 15%</strong> and <strong>technical debt by 10%</strong> through continuous improvement of project delivery methods, techniques, processes, and practices.</li>
+                                    <li>Collaborated with business stakeholders to define business and systems requirements for new solutions and technology implementations, and translated them into technical specifications.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             PROJECTS (+ Awards card)
+             Card grid: 1 per row on phones, 2 on tablets, 3 on wide screens.
+             Each card's description is cut to 4 lines (class "clamp").
+             "Read more" opens ONE shared pop-up (#projectModal, near the bottom of
+             this file); portfolio.js (section 8) copies the clicked card's title,
+             image, tags and full text into it – so no JS change is needed per project.
+
+             CARD STRUCTURE (keep these class names – JS reads them):
+               .project-card   → the card
+               .project-icon   → small image
+               .card-title     → project name
+               .tag            → pills (as many as you like)
+               .card-text      → full description
+               "Read more" button with data-bs-toggle="modal" data-bs-target="#projectModal"
+
+             TO ADD A PROJECT: copy one <div class="col reveal"> … </div> block.
+             ================================================================= -->
+        <section id="projects" class="section">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Signature programs</span>
+                    <h2>Projects</h2>
+                </div>
+
+                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                    <!-- Project card (alt="" on the image because the title next to it
+                         already describes it – screen readers skip decorative images) -->
+                    <div class="col reveal">
+                        <article class="card project-card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <img src="../images/logo-digitaltransfo.png" alt="" class="project-icon mb-3" loading="lazy">
+                                <h3 class="h5 card-title">BSS Transformation Program</h3>
+                                <div class="mb-2"><span class="tag">BSS</span><span class="tag">Vendor Selection</span><span class="tag">Governance</span></div>
+                                <p class="card-text clamp">Led end-to-end Digital Enterprise and BSS transformation, including needs analysis, supplier selection, project management, and governance. Recommended optimal approaches for migrating legacy systems, with rigorous risk and cost-benefit analysis.</p>
+                                <button class="btn btn-link read-more mt-auto align-self-start p-0" data-bs-toggle="modal" data-bs-target="#projectModal">Read more <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col reveal">
+                        <article class="card project-card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <img src="../images/logo-oss.png" alt="" class="project-icon mb-3" loading="lazy">
+                                <h3 class="h5 card-title">National-Scale OSS Modernization</h3>
+                                <div class="mb-2"><span class="tag">5G</span><span class="tag">AI/ML Automation</span><span class="tag">OSS</span></div>
+                                <p class="card-text clamp">Led a multi-year, strategic transformation of the Operations Support Systems (OSS) layer for a major Communications Service Provider. This program modernized the infrastructure to fully leverage 5G capabilities and integrated AI/ML-driven automation to streamline end-to-end operations. By orchestrating the lifecycle of 25 mission-critical systems across 10 global vendors, I enabled the organization to adopt agile business models and significantly improve cross-domain KPIs.</p>
+                                <button class="btn btn-link read-more mt-auto align-self-start p-0" data-bs-toggle="modal" data-bs-target="#projectModal">Read more <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col reveal">
+                        <article class="card project-card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <img src="../images/logo-cybersecurity.png" alt="" class="project-icon mb-3" loading="lazy">
+                                <h3 class="h5 card-title">Enterprise Cybersecurity &amp; Resilience Program</h3>
+                                <div class="mb-2"><span class="tag">Security</span><span class="tag">PAM</span><span class="tag">BCM</span></div>
+                                <p class="card-text clamp">Directed a comprehensive, three-year cybersecurity initiative designed to harden the organizational posture against evolving global threats. By architecting a multi-layered defense strategy across eight critical streams—ranging from perimeter hardening and data encryption to privileged access management and business continuity management—I built a "Security-First" culture. This program redefined the organizational design and established a sustainable framework for long-term data protection and regulatory compliance.</p>
+                                <button class="btn btn-link read-more mt-auto align-self-start p-0" data-bs-toggle="modal" data-bs-target="#projectModal">Read more <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col reveal">
+                        <article class="card project-card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <img src="../images/logo-bi.png" alt="" class="project-icon mb-3" loading="lazy">
+                                <h3 class="h5 card-title">Business Intelligence &amp; Analytics Implementation</h3>
+                                <div class="mb-2"><span class="tag">BI</span><span class="tag">CVM</span><span class="tag">+15% Revenue</span></div>
+                                <p class="card-text clamp">Pioneered BI tools, CVM, CDM, and advanced analytics, resulting in a 15% incremental revenue increase through informed decision-making.</p>
+                                <button class="btn btn-link read-more mt-auto align-self-start p-0" data-bs-toggle="modal" data-bs-target="#projectModal">Read more <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col reveal">
+                        <article class="card project-card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <img src="../images/logo-cloud.png" alt="" class="project-icon mb-3" loading="lazy">
+                                <h3 class="h5 card-title">Private Cloud Transformation</h3>
+                                <div class="mb-2"><span class="tag">Cloud</span><span class="tag">Data Center</span><span class="tag">Virtualization</span></div>
+                                <p class="card-text clamp">Orchestrated a high-impact initiative to consolidate three geographically dispersed data centers into a single, high-efficiency Private Cloud environment. By integrating compute, storage, networking, and virtualization into a unified stack, I reduced the physical infrastructure footprint while maintaining 100% of technology objectives. This transformation significantly lowered operational overhead and optimized resource utilization across the enterprise.</p>
+                                <button class="btn btn-link read-more mt-auto align-self-start p-0" data-bs-toggle="modal" data-bs-target="#projectModal">Read more <i class="bi bi-arrow-right"></i></button>
+                            </div>
+                        </article>
+                    </div>
+                    <!-- AWARDS card – fills the 6th slot of the grid so there's no empty gap.
+                         It has no "Read more" button. id="awards" lets you link to it (#awards).
+                         TO ADD AN AWARD: copy one <li> line. -->
+                    <div class="col reveal" id="awards">
+                        <article class="card project-card awards-card h-100">
+                            <div class="card-body">
+                                <div class="edu-icon mb-3"><i class="bi bi-trophy-fill"></i></div>
+                                <h3 class="h5 card-title">Awards</h3>
+                                <ul class="list-unstyled mb-0 award-list">
+                                    <li><i class="bi bi-star-fill"></i> Pulse – Top Executive Award – Big Data</li>
+                                    <li><i class="bi bi-star-fill"></i> Pulse – Top Executive Award – Customer Success</li>
+                                </ul>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- =================================================================
+             CONTACT
+             Left (col-lg-5): contact details + LinkedIn
+             Right (col-lg-7): contact form
+             ================================================================= -->
+        <section id="contact" class="section section-alt">
+            <div class="container">
+                <div class="section-head reveal">
+                    <span class="eyebrow">Let's work together</span>
+                    <h2>Contact</h2>
+                </div>
+
+                <div class="row g-4">
+                    <!-- LEFT: contact details.
+                         tel: and mailto: links open the phone dialer / email app.
+                         TO CHANGE THE EMAIL: update it in href="mailto:…" AND the link text
+                         (the copy button copies the link text), plus the footer link. -->
+                    <div class="col-lg-5 reveal">
+                        <div class="glass-card h-100">
+                            <h3 class="h5 mb-3">Get in touch</h3>
+                            <ul class="list-unstyled contact-list mb-4">
+                                <li>
+                                    <i class="bi bi-geo-alt"></i>
+                                    <span>Regina, SK, Canada</span>
+                                </li>
+                                <li>
+                                    <i class="bi bi-telephone"></i>
+                                    <a href="tel:+16399949924">+1 639-994-9924</a>
+                                </li>
+                                <li>
+                                    <i class="bi bi-envelope"></i>
+                                    <a href="mailto:mahmoudkhorbatly@gmail.com" id="emailLink">mahmoudkhorbatly@gmail.com</a>
+                                    <button type="button" class="btn btn-icon btn-sm ms-1" id="copyEmail" aria-label="Copy email address"
+                                            data-bs-toggle="tooltip" title="Copy email">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                </li>
+                            </ul>
+                            <a href="https://www.linkedin.com/in/mahmoud-khorbatly/" target="_blank" rel="noopener" class="btn btn-linkedin">
+                                <i class="bi bi-linkedin"></i> Connect on LinkedIn
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- RIGHT: CONTACT FORM
+                         - action="…"  → Formspree address that emails the message to you.
+                                         Change it here to use a different Formspree form.
+                         - novalidate  → turns off the browser's default error bubbles so
+                                         portfolio.js (section 10) can show its own messages.
+                         - Each input's name="…" becomes the field label in the email you receive.
+
+                         FIELD PATTERN (repeat for every field):
+                           <label for="X">           ← "for" must equal the input id (clicking label focuses input)
+                           <input id="X" name="X">   ← id used by JS, name sent to Formspree
+                           <div class="invalid-feedback" id="XError">  ← JS writes the error message here
+                         Red asterisk (*) = required. The validation rules themselves live in
+                         portfolio.js, in the "fields" object. -->
+                    <div class="col-lg-7 reveal">
+                        <div class="glass-card">
+                            <form id="contactForm" action="https://formspree.io/f/mgoayppy" method="POST" novalidate>
+                                <!-- HONEYPOT (anti-spam): hidden from people, but spam bots fill in every field.
+                                     Formspree automatically discards messages where "_gotcha" isn't empty. -->
+                                <input type="text" name="_gotcha" class="d-none" tabindex="-1" autocomplete="off">
+
+                                <!-- g-3 = spacing between fields; col-md-6 = two fields per row from tablets up -->
+                                <div class="row g-3">
+                                    <!-- Name (required) -->
+                                    <div class="col-md-6">
+                                        <label for="name" class="form-label">Full name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="name" name="name" autocomplete="name" placeholder="Jane Doe" required>
+                                        <div class="invalid-feedback" id="nameError"></div>
+                                    </div>
+                                    <!-- Email (required) -->
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                        <input type="email" class="form-control" id="email" name="email" autocomplete="email" placeholder="jane@company.com" required>
+                                        <div class="invalid-feedback" id="emailError"></div>
+                                    </div>
+                                    <!-- Phone (optional – only validated if filled in) -->
+                                    <div class="col-md-6">
+                                        <label for="phone" class="form-label">Phone <span class="text-body-secondary small">(optional)</span></label>
+                                        <input type="tel" class="form-control" id="phone" name="phone" autocomplete="tel" placeholder="+1 306 555 0123">
+                                        <div class="invalid-feedback" id="phoneError"></div>
+                                    </div>
+                                    <!-- Reason dropdown (required).
+                                         The first option has value="" so leaving it on "Choose…" fails validation.
+                                         TO ADD A REASON: add another <option> line. -->
+                                    <div class="col-md-6">
+                                        <label for="subject" class="form-label">Reason for contact <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="subject" name="subject" required>
+                                            <option value="" selected disabled>Choose…</option>
+                                            <option>Executive / leadership opportunity</option>
+                                            <option>Advisory or consulting engagement</option>
+                                            <option>Speaking or panel invitation</option>
+                                            <option>Networking</option>
+                                            <option>Other</option>
+                                        </select>
+                                        <div class="invalid-feedback" id="subjectError"></div>
+                                    </div>
+                                    <!-- Message (required, 20–1000 characters).
+                                         maxlength stops typing past 1000. Below it: error message (left)
+                                         and live character counter #charCount (right, updated by JS). -->
+                                    <div class="col-12">
+                                        <label for="message" class="form-label">Message <span class="text-danger">*</span></label>
+                                        <textarea class="form-control" id="message" name="message" rows="5" maxlength="1000" placeholder="How can I help?" required></textarea>
+                                        <div class="d-flex justify-content-between">
+                                            <div class="invalid-feedback d-block" id="messageError"></div>
+                                            <small class="text-body-secondary ms-auto" id="charCount">0 / 1000</small>
+                                        </div>
+                                    </div>
+                                    <!-- Consent checkbox (required) -->
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="consent" name="consent" required>
+                                            <label class="form-check-label" for="consent">
+                                                I agree that my details may be used to respond to this inquiry. <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="invalid-feedback" id="consentError"></div>
+                                        </div>
+                                    </div>
+                                    <!-- Buttons.
+                                         Send: while sending, JS shows the spinner (#submitSpinner),
+                                         changes #submitLabel to "Sending…" and disables the button.
+                                         Clear (type="reset"): empties the form; JS also clears error messages. -->
+                                    <div class="col-12 d-flex align-items-center gap-3">
+                                        <button type="submit" class="btn btn-accent px-4" id="submitBtn">
+                                            <span class="spinner-border spinner-border-sm d-none me-1" id="submitSpinner" aria-hidden="true"></span>
+                                            <span id="submitLabel"><i class="bi bi-send"></i> Send Message</span>
+                                        </button>
+                                        <button type="reset" class="btn btn-link text-body-secondary">Clear</button>
+                                    </div>
+                                </div>
+                                <!-- Overall result message (green success / red error).
+                                     Hidden (d-none) until JS fills it after Send is clicked. -->
+                                <div class="alert mt-3 d-none" role="alert" id="formAlert"></div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- =================================================================
+         FOOTER
+         Copyright on the left (stacked above the icons on phones), icon links on the right.
+         ================================================================= -->
+    <footer class="site-footer py-4">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <!-- #year is filled with the current year by JS, so it never goes out of date -->
+            <p class="mb-0 small">&copy; <span id="year"></span> Mahmoud Khorbatly. All rights reserved.</p>
+            <div class="d-flex gap-3">
+                <a href="https://www.linkedin.com/in/mahmoud-khorbatly/" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin fs-5"></i></a>
+                <a href="mailto:mahmoudkhorbatly@gmail.com" aria-label="Email"><i class="bi bi-envelope-fill fs-5"></i></a>
+                <a href="#hero" aria-label="Back to top"><i class="bi bi-arrow-up-circle-fill fs-5"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- =================================================================
+         FLOATING / POP-UP ELEMENTS
+         These sit outside the normal page flow and are controlled by JS.
+         ================================================================= -->
+
+    <!-- Back-to-top floating button (bottom-right). Hidden until you scroll 600px
+         (portfolio.js section 2). id used by JS. -->
+    <button type="button" class="btn back-to-top" id="backToTop" aria-label="Back to top">
+        <i class="bi bi-arrow-up"></i>
+    </button>
+
+    <!-- PROJECT DETAILS POP-UP (Bootstrap modal)
+         Empty on purpose: portfolio.js (section 8) fills the image, title, tags and text
+         from whichever project card's "Read more" was clicked.
+         All ids inside (projectModalIcon, projectModalTitle, projectModalTags,
+         projectModalBody) are used by JS.
+         The footer button closes the pop-up and jumps to the Contact form. -->
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-labelledby="projectModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <img src="" alt="" class="project-icon me-3" id="projectModalIcon">
+                    <h2 class="modal-title h5" id="projectModalTitle"></h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="projectModalTags" class="mb-3"></div>
+                    <p id="projectModalBody" class="mb-0"></p>
+                </div>
+                <div class="modal-footer">
+                    <a href="#contact" class="btn btn-accent" data-bs-dismiss="modal" id="modalContact">Discuss a similar project</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION (small message at the bottom-center for 3 seconds,
+         e.g. "Email address copied"). Text is set by showToast() in portfolio.js. -->
+    <div class="toast-container position-fixed bottom-0 start-50 translate-middle-x p-3">
+        <div id="siteToast" class="toast align-items-center border-0" role="status" aria-live="polite" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body" id="siteToastBody"></div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+         SCRIPTS – loaded at the END of <body> so all the HTML above exists
+         before the code runs.
+         ORDER MATTERS: Bootstrap first (accordion, modal, menu, tooltips…),
+         then our portfolio.js, which uses Bootstrap's features.
+         ("bundle" = includes Popper, which tooltips need.)
+         ================================================================= -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="portfolio.js"></script>
+</body>
+</html>
